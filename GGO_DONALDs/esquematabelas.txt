@@ -1,3 +1,6 @@
+Com base exclusivamente nas imagens fornecidas (screenshots do VS Code), que exibem o painel do explorador de arquivos, a estrutura completa de pastas e arquivos do projeto **GGO\_DONALD'S\_2.0** é a seguinte:
+
+```
 GGO_DONALD'S_2.0/
 │
 ├── backend/
@@ -26,13 +29,14 @@ GGO_DONALD'S_2.0/
 │
 ├── data/
 │   ├── ggo_CREATE_TABLE.sql
-│   └── ggo_inserts.sql
+│   ├── ggo_inserts.sql
+│   └── esquema relacional. (DER)
 │
 ├── frontend/
 │   ├── a-conta/
 │   │   ├── conta.css
 │   │   ├── conta.html
-│   │   └── conta.JS
+│   │   └── conta.js
 │   │
 │   ├── a-criar_login/
 │   │   ├── cadastro.css
@@ -49,11 +53,12 @@ GGO_DONALD'S_2.0/
 │   │   ├── login.html
 │   │   └── login.js
 │   │
-│   ├── a-pagamento/   (vazio por enquanto)
+│   ├── a-pagamento/
 │   │   ├── pagamento.css
 │   │   ├── pagamento.html
 │   │   └── pagamento.js
-│   ├── imgs/          # imagens dos produtos
+│   │
+│   ├── imgs/
 │   │
 │   ├── style/
 │   │   ├── footer.css
@@ -66,9 +71,5 @@ GGO_DONALD'S_2.0/
 │   └── main.js
 │
 ├── node_modules/
-├── juntarVideos.sh
 ├── package.json
 └── package-lock.json
-
-
-guarde isso

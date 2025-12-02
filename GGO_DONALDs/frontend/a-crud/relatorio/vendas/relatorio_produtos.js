@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const produtos = await response.json();
 
             // Ordenar decrescente pela quantidade vendida
-            produtos.sort((a, b) => a.id_produto - b.id_produto);
+            produtos.sort((a, b) => b.quantidade - a.quantidade);
 
             tabela.innerHTML = '';
             let totalGeral = 0;
