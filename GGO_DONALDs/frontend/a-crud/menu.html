@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu CRUD</title>
+
+    <link rel="stylesheet" href="crud_menu.css">
+    <link rel="stylesheet" href="../reset.css">
+</head>
+
+<body>
+
+    <header class="header-crud">
+        <button id="btnVoltar" class="btn-voltar">⬅ Voltar</button>
+
+        <div id="usuarioLogadoContainer" class="usuario-logado-container">
+            <!-- Será preenchido com renderUsuarioLogado() -->
+        </div>
+    </header>
+
+    <main class="container">
+
+        <h2>Selecione um CRUD</h2>
+
+        <div class="menu-crud">
+
+            <label class="menu-item">
+                <input type="radio" name="crud" value="funcionario">
+                Funcionário
+            </label>
+
+            <label class="menu-item">
+                <input type="radio" name="crud" value="pessoa">
+                Pessoa
+            </label>
+
+            <label class="menu-item">
+                <input type="radio" name="crud" value="produto">
+                Produto
+            </label>
+
+            <label class="menu-item">
+                <input type="radio" name="crud" value="categoria">
+                Categoria
+            </label>
+
+            <label class="menu-item">
+                <input type="radio" name="crud" value="cargo">
+                Cargo
+            </label>
+            
+        </div>
+
+        <!-- Botões de relatório -->
+        <div class="menu-relatorio">
+            <button onclick="window.location.href='relatorio/users/users.html'">Relatório de Users</button>
+            <button onclick="window.location.href='relatorio/vendas/vendas.html'">Relatório de Vendas</button>
+        </div>
+
+    </main>
+
+    <!-- Carrega script externo que gerencia usuário e navegação -->
+    <script src="./menu.js"></script>
+</body>
+
+</html>

@@ -57,8 +57,19 @@ CREATE TABLE Pedido (
     id_pessoa INT NOT NULL,
     id_pagamento INT NOT NULL,
     data_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    valor_total NUMERIC(10,2) DEFAULT 0, -- Este valor será atualizado
     CONSTRAINT fk_pedido_pessoa FOREIGN KEY (id_pessoa) 
         REFERENCES Pessoa (id_pessoa) ON DELETE CASCADE,
     CONSTRAINT fk_pedido_pagamento FOREIGN KEY (id_pagamento) 
         REFERENCES Pagamento (id_pagamento)
+);
+
+CREATE TABLE Item_Pedido (
+    id_item_pedido SERIAL PRIMARY KEY,
+    id_pedido INT NOT NULL,
+    id_produto INT NOT NULL,
+    quantidade INT NOT NULL,
+    valor_unitario NUMERIC(10,2) NOT NULL,
+    CONSTRAINT fk_item_pedido_pedido FOREIGN KEY (id_pedido) REFERENCES Pedido (id_pedido) ON DELETE CASCADE,
+    CONSTRAINT fk_item_pedido_produto FOREIGN KEY (id_produto) REFERENCES Produto (id_produto)
 );

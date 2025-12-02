@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="funcionario.css">
+    <link rel="stylesheet" href="../reset.css">
+</head>
+
+<body>
+    <button id="btnVoltar">⬅ Voltar</button>
+    <div class="container">
+
+        <div>
+            <h2>CRUD Funcionário</h2>
+            <div class="search-container">
+                <label for="searchId">Buscar por ID:</label>
+                <div class="search-input-group">
+                    <input type="number" id="searchId" placeholder="Digite o ID para buscar">
+                    <button type="button" id="btnBuscar">🔍 Buscar</button>
+
+                    <button type="button" id="btnIncluir" class="btn-primary" style="display:noner">Incluir</button>
+                    <button type="button" id="btnAlterar" class="btn-secondary" style="display: none;">Alterar</button>
+                    <button type="button" id="btnExcluir" class="btn-danger" style="display: none;">Excluir</button>
+                    <button type="button" id="btnSalvar" class="btn-save" style="display: none;">Salvar</button>
+                    <button type="button" id="btnCancelar" class="btn-cancel" style="display:none">Cancelar</button>
+                </div>
+            </div>
+            <br>
+            <!-- FORMULÁRIO FUNCIONÁRIO -->
+            <div class="section-form" id="funcionario">
+                <label>Data de Início: <input type="date" id="funcData"></label><br>
+                <label>Salário: <input type="number" step="0.01" id="funcSalario"></label><br>
+                <label for="funcCargo">Cargo:</label>
+                <select id="funcCargo"></select>
+                <br>
+                <label for="funcPessoa">Pessoa disponível:</label>
+                <select id="funcPessoa"></select>
+                <br>
+
+            </div>
+        </div>
+        <!-- TABELA DINÂMICA -->
+        <div id="tables">
+            <h3>Tabela Gerada</h3>
+            <div id="tableFuncionario"></div>
+        </div>
+    </div>
+    <script src="funcionario.js"></script>
+
+</body>
+
+</html>

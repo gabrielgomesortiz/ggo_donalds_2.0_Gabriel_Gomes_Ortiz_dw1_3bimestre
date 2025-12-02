@@ -1,0 +1,93 @@
+/* ===== LAYOUT GERAL ===== */
+body {
+    font-family: Arial, sans-serif;
+    background: #f3f3f3;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    margin: 40px auto;
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+}
+
+/* ===== HEADER ===== */
+.header-crud {
+    width: 100%;
+    background: #ffffff;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #ddd;
+    position: sticky;
+    top: 0;
+}
+
+.btn-voltar {
+    padding: 8px 14px;
+    font-size: 15px;
+    cursor: pointer;
+    background: #ddd;
+    border: none;
+    border-radius: 6px;
+}
+
+.usuario-logado-container {
+    display: flex;
+    align-items: center;
+}
+
+/* ===== MENU DOS CRUDS ===== */
+.menu-crud {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.menu-item {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    font-size: 18px;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.menu-item:hover {
+    background: #e8e8e8;
+}
+
+.menu-item input {
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+.menu-relatorio {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.menu-relatorio button {
+    padding: 12px 25px;
+    font-size: 16px;
+    cursor: pointer;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.menu-relatorio button:hover {
+    background: #45a049;
+}

@@ -1,8 +1,14 @@
+-- -------------------------
+-- INSERÇÕES DE CATEGORIA
+-- -------------------------
 INSERT INTO Categoria (nome_categoria) VALUES
 ('acompanhamento'),
 ('bebida'),
 ('hamburguer');
 
+-- -------------------------
+-- INSERÇÕES DE PRODUTO
+-- -------------------------
 INSERT INTO Produto (nome, id_categoria, caminho_imagem, quantidade_estoque, data_fabricacao, preco) VALUES
 ('GGOsFritas Cheddar Bacon', 1, 'imgs/1.jpeg', 50, '2023-08-01', 15.90),
 ('GGOsFritas Grande', 1, 'imgs/2.jpeg', 50, '2023-08-01', 12.90),
@@ -64,42 +70,105 @@ INSERT INTO Produto (nome, id_categoria, caminho_imagem, quantidade_estoque, dat
 ('Duplo Burger com Queijo Clássico', 3, 'imgs/58.jpeg', 30, '2023-08-01', 36.50),
 ('Duplo Burger com Queijo Especial', 3, 'imgs/59.jpeg', 30, '2023-08-01', 37.59);
 
-
+-- -------------------------
+-- INSERÇÕES DE CARGO
+-- -------------------------
 INSERT INTO Cargo (nome_cargo) VALUES
-('Faxineiro'),
-('adm'),
-('Chefe');
+('Faxineiro'), -- id_cargo 1
+('adm'),       -- id_cargo 2
+('Chefe');     -- id_cargo 3
 
+-- -------------------------
+-- INSERÇÕES DE PESSOA
+-- -------------------------
 INSERT INTO Pessoa (nome, email, senha) VALUES
-('Cliente 1', 'cliente1@email.com', 'senha123'),
-('Cliente 2', 'cliente2@email.com', 'senha123'),
-('Cliente 3', 'cliente3@email.com', 'senha123'),
-('Cliente 4', 'cliente4@email.com', 'senha123'),
-('Funcionario 1', 'func1@email.com', 'senha123'),
-('Funcionario 2', 'func2@email.com', 'senha123'),
-('Funcionario 3', 'func3@email.com', 'senha123');
+('Cliente 1', 'cliente1@email.com', 'senha123'), -- id_pessoa 1
+('Cliente 2', 'cliente2@email.com', 'senha123'), -- id_pessoa 2
+('Cliente 3', 'cliente3@email.com', 'senha123'), -- id_pessoa 3
+('Cliente 4', 'cliente4@email.com', 'senha123'), -- id_pessoa 4
+('Funcionario 1', 'func1@email.com', 'senha123'), -- id_pessoa 5
+('Funcionario 2', 'func2@email.com', 'senha123'), -- id_pessoa 6
+('Funcionario 3', 'func3@email.com', 'senha123'); -- id_pessoa 7
 
+-- -------------------------
+-- INSERÇÕES DE FUNCIONARIO
+-- -------------------------
 INSERT INTO Funcionario (id_pessoa, id_cargo, salario, data_inicio) VALUES
-(5, 1, 1500.00, '2023-08-01'),
-(6, 2, 5000.00, '2023-08-01'),
-(7, 3, 10000.00, '2023-08-01');
+(5, 1, 1500.00, '2023-08-01'), -- id_funcionario 1 (Pessoa 5)
+(6, 2, 5000.00, '2023-08-01'), -- id_funcionario 2 (Pessoa 6)
+(7, 3, 10000.00, '2023-08-01'); -- id_funcionario 3 (Pessoa 7)
 
-
+-- -------------------------
+-- INSERÇÕES DE FORMA_PAGAMENTO
+-- -------------------------
 INSERT INTO Forma_Pagamento (nome_forma_pagamento) VALUES
-('Cartão'),
-('Pix');
+('Cartão'), -- id_forma_pagamento 1
+('Pix');    -- id_forma_pagamento 2
 
+-- -------------------------
+-- INSERÇÕES DE PAGAMENTO (10 registros)
+-- -------------------------
 INSERT INTO Pagamento (id_forma_pagamento, status_pagamento) VALUES
-(1, TRUE),
-(2, TRUE),
-(1, TRUE),
-(2, TRUE); 
+(1, TRUE),  -- id_pagamento 1: Cartão, Pago
+(2, TRUE),  -- id_pagamento 2: Pix, Pago
+(1, TRUE),  -- id_pagamento 3: Cartão, Pago
+(2, TRUE),  -- id_pagamento 4: Pix, Pago
+(1, TRUE),  -- id_pagamento 5: Cartão, Pago
+(2, TRUE),  -- id_pagamento 6: Pix, Pago
+(1, FALSE), -- id_pagamento 7: Cartão, Pendente
+(2, TRUE),  -- id_pagamento 8: Pix, Pago
+(1, FALSE), -- id_pagamento 9: Cartão, Pendente
+(2, TRUE);  -- id_pagamento 10: Pix, Pago
 
+-- -------------------------
+-- INSERÇÕES DE PEDIDO (10 registros)
+-- -------------------------
+-- Nota: O campo id_funcionario não existe na tabela Pedido. A inserção está correta usando apenas id_pessoa e id_pagamento.
 INSERT INTO Pedido (id_pessoa, id_pagamento, data_pedido) VALUES
-(1, 1, '2023-08-01 10:00:00'),
-(2, 2, '2023-08-02 11:30:00'),
-(3, 3, '2023-08-03 12:45:00'),
-(4, 4, '2023-08-04 15:00:00');
-
-
-
+( 1, 1, '2023-08-01 10:00:00'),  -- Pedido 1: Cliente 1
+( 2, 2, '2023-08-02 11:30:00'),  -- Pedido 2: Cliente 2
+( 3, 3, '2023-08-03 12:45:00'),  -- Pedido 3: Cliente 3
+( 4, 4, '2023-08-04 15:00:00'),  -- Pedido 4: Cliente 4
+( 1, 5, '2023-08-05 16:20:00'),  -- Pedido 5: Cliente 1
+(2, 6, '2023-08-06 17:05:00'),  -- Pedido 6: Cliente 2
+( 3, 7, '2023-08-07 09:15:00'),  -- Pedido 7: Cliente 3
+( 4, 8, '2023-08-08 14:00:00'),  -- Pedido 8: Cliente 4
+( 1, 9, '2023-08-09 18:30:00'),  -- Pedido 9: Cliente 1
+( 2, 10, '2023-08-10 20:00:00'); -- Pedido 10: Cliente 2
+-- -------------------------
+-- INSERÇÕES DE ITEM_PEDIDO (10 registros)
+-- -------------------------
+INSERT INTO Item_Pedido (id_pedido, id_produto, quantidade, valor_unitario) VALUES
+-- Pedido 1: Hamburguer e batata
+(1, 43, 1, 35.90), -- Super Cheddar GGOsMelt Bacon
+(1, 2, 1, 12.90),  -- GGOsFritas Grande
+-- Pedido 2: Hamburguer, bebida e acompanhamento
+(2, 58, 1, 36.50), -- Duplo Burger com Queijo Clássico
+(2, 14, 2, 6.90),  -- Coca-Cola 300ml (2 unidades)
+(2, 8, 1, 15.90),  -- Chicken GGOsNuggets 6 unidades
+-- Pedido 3: Bebidas
+(3, 32, 5, 4.50),  -- Água Mineral (5 unidades)
+(3, 27, 2, 9.90),  -- Del Valle Laranja 500ml (2 unidades)
+-- Pedido 4: Dois hamburgueres
+(4, 46, 1, 34.90), -- Duplo Quarterão Tradicional
+(4, 47, 1, 34.90), -- Duplo Quarterão Bacon
+-- Pedido 5: Hamburguer e batata, com molhos extras
+(5, 54, 1, 27.60), -- Cheddar GGOsMelt Tradicional
+(5, 4, 1, 7.90),   -- GGOsFritas Pequena
+(5, 12, 1, 2.50),  -- Molho Barbecue
+(5, 9, 2, 1.50),   -- Ketchup (2 unidades)
+-- Pedido 6: Itens de cafeteria
+(6, 36, 1, 8.90),  -- Café Premium 300ml
+(6, 40, 1, 11.00), -- Capuccino 300ml
+-- Pedido 7: Hamburguer e bebida (Pagamento Pendente)
+(7, 50, 2, 31.20), -- GGOsNífico Bacon Original (2 unidades)
+(7, 17, 2, 6.90),  -- Coca-Cola Zero 300ml (2 unidades)
+-- Pedido 8: Hamburguer e nuggets
+(8, 56, 1, 37.90), -- Duplo Burger Bacon Clássico
+(8, 7, 1, 22.90),  -- Chicken GGOsNuggets 10 unidades
+-- Pedido 9: Três quarterões com molho (Pagamento Pendente)
+(9, 48, 3, 28.75), -- Quarterão com Queijo Simples (3 unidades)
+(9, 13, 3, 2.50),  -- Molho Ranch (3 unidades)
+-- Pedido 10: Hamburguer e bebida grande
+(10, 44, 1, 32.50), -- Big GGOs Clássico
+(10, 16, 1, 10.90); -- Coca-Cola 700ml

@@ -1,5 +1,6 @@
 // conta.js
 const PEDIDO_KEY = 'pedidoAtual';
+const API_URL = 'http://localhost:3001';
 
 document.addEventListener('DOMContentLoaded', function () {
     // ==============================
@@ -103,14 +104,94 @@ function configurarBotoes() {
     if (botoes.length < 2) return;
 
     botoes[0].addEventListener('click', voltarParaCardapio);
-    // O botão “prosseguir” redireciona para pagamento
-    botoes[1].addEventListener('click', () => {
-        window.location.href = '../a-pagamento/pagamento.html';
+    // O botão “prosseguir” agora registra pagamento (status false), pedido e itens no servidor antes de redirecionar
+    botoes[1].addEventListener('click', async (e) => {
+        try {
+            await registrarPedidoPendente(); // registra tudo com status_pagamento = false
+            // após registrar, redireciona para página de pagamento onde usuário finaliza/visualiza
+            window.location.href = '../a-pagamento/pagamento.html';
+        } catch (err) {
+            console.error('Erro ao registrar pedido pendente:', err);
+            alert('Erro ao registrar pedido. Tente novamente.');
+        }
     });
 }
 
 function voltarParaCardapio() {
     window.location.href = '../index.html';
+}
+
+// ==============================
+// Registro de pedido pendente (novo)
+// ==============================
+async function registrarPedidoPendente() {
+    // Pega usuário
+    const usuarioStr = getCookie("usuario");
+    if (!usuarioStr) throw new Error('Usuário não autenticado.');
+    const usuario = JSON.parse(usuarioStr);
+    const id_pessoa = usuario.id_pessoa;
+    if (!id_pessoa) throw new Error('ID do usuário não encontrado.');
+
+    // Pega pedido local
+    const pedidoAtual = JSON.parse(localStorage.getItem(PEDIDO_KEY));
+    if (!pedidoAtual || !pedidoAtual.pedidos) throw new Error('Nenhum pedido encontrado no localStorage.');
+
+    // Monta itens no formato esperado pelo backend
+    const categorias = ['hamburgueres', 'acompanhamentos', 'bebidas'];
+    const itens = [];
+    for (const cat of categorias) {
+        const arr = pedidoAtual.pedidos[cat] || [];
+        for (const item of arr) {
+            if (!item || !item.id || !item.quantidade) continue;
+            itens.push({
+                id_produto: item.id,
+                quantidade: item.quantidade,
+                preco_unitario: item.precoUnitario ?? item.preco
+            });
+        }
+    }
+
+    if (itens.length === 0) throw new Error('Pedido sem itens.');
+
+    // Observação: Forma de pagamento obrigatória no banco. Aqui usamos 2 (Pix) como padrão.
+    // Se preferir, ajuste para 1 (Cartão) ou receba do usuário.
+    const id_forma_pagamento_padrao = 2;
+
+    const res = await fetch(`${API_URL}/pagamento`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            id_pessoa: id_pessoa,
+            id_forma_pagamento: id_forma_pagamento_padrao,
+            status_pagamento: false, // registro como PENDENTE
+            itens
+        })
+    });
+
+    if (!res.ok) {
+        const txt = await res.text().catch(() => 'Erro desconhecido');
+        throw new Error(`Falha ao registrar pagamento: ${txt}`);
+    }
+
+    const resJson = await res.json();
+
+    // salvar resposta para uso posterior (ex: confirmar pagamento na tela de pagamento)
+    try {
+        // Normaliza formato salvo para garantir pagamento.id_pagamento
+        const normalized = {
+            pagamento: resJson.pagamento || { id_pagamento: resJson.id_pagamento },
+            pedido: resJson.pedido || resJson,
+            itens: resJson.itens || []
+        };
+        localStorage.setItem('ultimoPedidoRegistrado', JSON.stringify(normalized));
+    } catch (e) {
+        console.warn('Não foi possível salvar ultimoPedidoRegistrado:', e);
+    }
+
+    // opcional: remover o pedidoAtual se quiser (aqui mantemos para exibição/backup)
+    // localStorage.removeItem(PEDIDO_KEY);
+
+    return resJson;
 }
 
 // ==============================

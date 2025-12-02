@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Categoria</title>
+
+    <link rel="stylesheet" href="categoria.css">
+    <link rel="stylesheet" href="../reset.css">
+</head>
+
+<body>
+
+    <button id="btnVoltar">⬅ Voltar</button>
+
+    <div class="container">
+
+        <div>
+            <h2>CRUD Categoria</h2>
+
+            <!-- Área de busca -->
+            <div class="search-container">
+                <label for="searchCategoria">Buscar por ID ou Nome:</label>
+
+                <div class="search-input-group">
+                    <input type="text" id="searchCategoria" placeholder="Digite o ID ou nome">
+
+                    <button type="button" id="btnBuscar">🔍 Buscar</button>
+                    <button type="button" id="btnIncluir" class="btn-primary" style="display:none">Incluir</button>
+                    <button type="button" id="btnAlterar" class="btn-secondary" style="display:none">Alterar</button>
+                    <button type="button" id="btnExcluir" class="btn-danger" style="display:none">Excluir</button>
+                    <button type="button" id="btnSalvar" class="btn-save" style="display:none">Salvar</button>
+                    <button type="button" id="btnCancelar" class="btn-cancel">Cancelar</button>
+                </div>
+            </div>
+
+            <br>
+
+            <!-- FORMULÁRIO DE CATEGORIA -->
+            <form id="categoria" class="section-form">
+                <h4>Categoria</h4>
+
+                <label>ID:
+                    <input type="text" id="catId" disabled>
+                </label>
+                <br>
+
+                <label>Nome:
+                    <input type="text" id="catNome" disabled>
+                </label>
+                <br>
+
+            </form>
+
+        </div>
+
+        <!-- TABELA DINÂMICA -->
+        <div id="tables">
+            <h3>Tabela de Categorias</h3>
+            <div id="tableCategoria"></div>
+        </div>
+
+    </div>
+
+    <script src="categoria.js"></script>
+
+</body>
+
+</html>

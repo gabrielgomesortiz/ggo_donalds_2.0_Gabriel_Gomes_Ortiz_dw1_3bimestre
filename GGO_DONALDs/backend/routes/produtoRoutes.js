@@ -2,38 +2,45 @@ const express = require('express');
 const router = express.Router();
 const produtoController = require('../controllers/produtoController');
 const multer = require('multer');
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
 
-// Caminho correto para salvar as imagens
-const caminhoImg = path.join(__dirname, '../../frontend/imgs');
+// =======================================================
+// Caminho para salvar imagens
+// =======================================================
+const pastaImgs = path.join(__dirname, '../../frontend/imgs');
 
-// Cria a pasta se não existir
-if (!fs.existsSync(caminhoImg)) {
-    fs.mkdirSync(caminhoImg, { recursive: true });
+// cria a pasta se não existir
+if (!fs.existsSync(pastaImgs)) {
+    fs.mkdirSync(pastaImgs, { recursive: true });
 }
 
-// Configuração do multer
+// =======================================================
+// Configuração do Multer
+// =======================================================
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, caminhoImg);
-    },
+    destination: (req, file, cb) => cb(null, pastaImgs),
     filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname);
-        // Gera nome seguro com timestamp
-        const safeName = `${Date.now()}${ext}`;
-        cb(null, safeName);
+        const id = req.params.id || req.body.produtoId || Date.now();
+        const ext = path.extname(file.originalname) || '.jpeg';
+        cb(null, `${id}${ext}`);
     }
 });
 
 const upload = multer({ storage });
 
+// =======================================================
 // Rotas CRUD Produto
-router.get('/', produtoController.listarProdutos);
-router.get('/:id', produtoController.obterProduto);
-router.post('/', upload.single('imagem'), produtoController.criarProduto);
-router.put('/:id', upload.single('imagem'), produtoController.atualizarProduto);
-router.delete('/:id', produtoController.deletarProduto);
-router.post('/upload', upload.single('imagem'), produtoController.uploadImagem);
+// =======================================================
+router.get('/', produtoController.listarProdutos);         // Listar todos
+router.get('/:id', produtoController.obterProduto);        // Obter por ID
+router.post('/', produtoController.criarProduto);          // Criar produto (sem imagem)
+router.put('/:id', produtoController.atualizarProduto);    // Atualizar produto (opcional imagem)
+router.delete('/:id', produtoController.deletarProduto);   // Deletar produto
+
+// =======================================================
+// Upload de imagem por ID
+// =======================================================
+router.post('/:id/imagem', upload.single('imagem'), produtoController.uploadImagemById);
 
 module.exports = router;

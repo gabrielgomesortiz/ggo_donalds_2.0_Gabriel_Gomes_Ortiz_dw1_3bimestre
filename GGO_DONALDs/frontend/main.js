@@ -82,7 +82,7 @@ function renderUsuarioLogado(container, usuario) {
     btnAdm.textContent = "Admin";
     btnAdm.className = "admin-btn";
     btnAdm.style.marginLeft = "10px";
-    btnAdm.addEventListener("click", () => window.location.href = "./a-crud/crud.html");
+    btnAdm.addEventListener("click", () => window.location.href = "./a-crud/menu.html");
     container.appendChild(btnAdm);
   }
 

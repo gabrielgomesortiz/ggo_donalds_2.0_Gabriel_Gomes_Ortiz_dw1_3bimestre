@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Usuários que Mais Compraram</title>
+    <link rel="stylesheet" href="../reset.css">
+    <link rel="stylesheet" href="relatorio.css">
+</head>
+
+<body>
+    
+    <button class="btn-voltar" id="btnVoltar">⬅ Voltar</button>
+    <div class="container">
+        <h1>Usuários que Mais Compraram</h1>
+
+        <!-- Filtros -->
+        <div class="filtros">
+            <input type="date" id="dataInicio" placeholder="Data Início">
+            <input type="date" id="dataFim" placeholder="Data Fim">
+            <input type="number" id="minCompras" placeholder="Mínimo de pedidos" min="1">
+            <input type="number" id="maxCompras" placeholder="Máximo de pedidos" min="1">
+
+            <button id="btnFiltrar">Filtrar</button>
+            <button id="btnLimpar">Limpar</button>
+        </div>
+
+        <!-- Tabela de pré-visualização -->
+        <table id="tabelaUsuarios">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Total de Pedidos</th>
+                    <th>Valor Total Comprado (R$)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Linhas serão preenchidas dinamicamente via JS -->
+            </tbody>
+        </table>
+
+        <button class="btn-gerar-pdf" onclick="gerarPDF()">Gerar PDF</button>
+    </div>
+
+    <script src="users.js"></script>
+</body>
+
+</html>

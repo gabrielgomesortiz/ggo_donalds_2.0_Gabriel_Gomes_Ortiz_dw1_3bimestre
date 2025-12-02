@@ -4,23 +4,19 @@ const cookieParser = require('cookie-parser');
 const db = require('./database'); // Banco PostgreSQL
 
 const app = express();
+// Servir imagens do frontend
+app.use('/imgs', express.static(path.join(__dirname, '../frontend/imgs')));
 
 // Configurações do servidor
 const HOST = 'localhost';
 const PORT_FIXA = 3001;
 
-// Caminho para frontend
-const caminhoFrontend = path.join(__dirname, '../../frontend/imgs');
-console.log('Caminho frontend:', caminhoFrontend);
-app.use('/imgs', express.static(path.join(__dirname, '../frontend/imgs')));
-
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(express.static(caminhoFrontend));
 
-// CORS
+// CORS (ajustado para não usar credentials quando origin é '*')
 app.use((req, res, next) => {
   const allowedOrigins = [
     'http://127.0.0.1:5500',
@@ -30,12 +26,18 @@ app.use((req, res, next) => {
     'http://localhost:3001'
   ];
   const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
+
+  if (origin && allowedOrigins.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+  } else {
+    res.header('Access-Control-Allow-Origin', '*');
+    // quando origin não é conhecido, não permitir credentials (evita conflito com '*')
+    res.removeHeader && res.removeHeader('Access-Control-Allow-Credentials');
   }
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  res.header('Access-Control-Allow-Credentials', 'true');
+
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
 
   if (req.method === 'OPTIONS') return res.sendStatus(200);
   next();
@@ -54,25 +56,30 @@ const produtoRoutes = require('./routes/produtoRoutes');
 const funcionarioRoutes = require('./routes/funcionarioRoutes');
 const categoriaRoutes = require('./routes/categoriaRoutes');
 const cargoRoutes = require('./routes/cargoRoutes');
-const pagamentoRoutes = require('./routes/pagamentoRoutes');      // ✅ nova
+const pagamentoRoutes = require('./routes/pagamentoRoutes');
+const relatorioRoutes = require('./routes/relatorioRoutes');
 
-// Usando rotas
+// Usando rotas (API montada antes de servir arquivos estáticos)
 app.use('/login', loginRoutes);
 app.use('/pessoa', pessoaRoutes);
 app.use('/produto', produtoRoutes);
 app.use('/funcionario', funcionarioRoutes);
 app.use('/categoria', categoriaRoutes);
 app.use('/cargo', cargoRoutes);
-app.use('/pagamento', pagamentoRoutes);      // ✅ nova
+app.use('/pagamento', pagamentoRoutes); 
+app.use('/relatorio', relatorioRoutes);
 
+// Caminho para frontend (servir estáticos após rotas)
+const caminhoFrontend = path.join(__dirname, '../frontend'); // ajustado para servir a pasta frontend inteira
+console.log('Caminho frontend:', caminhoFrontend);
+// servir imagens em /imgs
 
-// Rota raiz
+// servir arquivos estáticos do frontend (index.html, css, js, etc)
+app.use(express.static(caminhoFrontend));
+
+// Rota raiz serve o index.html do frontend
 app.get('/', (req, res) => {
-  res.json({
-    message: 'O server está funcionando - essa é a rota raiz!',
-    database: 'PostgreSQL',
-    timestamp: new Date().toISOString()
-  });
+  res.sendFile(path.join(caminhoFrontend, 'index.html'));
 });
 
 // Health check

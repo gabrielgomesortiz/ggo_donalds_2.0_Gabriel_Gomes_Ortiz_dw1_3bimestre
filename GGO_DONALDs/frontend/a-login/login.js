@@ -120,7 +120,7 @@ function showAdminChoice() {
   btnAdm.textContent = "Área Administrativa";
   btnAdm.className = 'admin-choice-btn admin-btn-adm';
   btnAdm.addEventListener('click', () => {
-    window.location.href = '../a-crud/crud.html';
+    window.location.href = '../a-crud/menu.html';
     choiceWrapper.remove();
   });
 

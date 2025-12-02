@@ -52,7 +52,7 @@ function gerarQrCode() {
     if (pixText) pixText.textContent = PIX_CODE;
 }
 
-async function registrarPedido(idCliente, idFormaPagamento) {
+async function registrarPedido(idCliente, idFormaPagamento, statusPagamento = false) {
     const pedidoAtual = JSON.parse(localStorage.getItem(PEDIDO_KEY));
     if (!pedidoAtual || !pedidoAtual.pedidos) throw new Error("Nenhum pedido encontrado.");
 
@@ -75,15 +75,101 @@ async function registrarPedido(idCliente, idFormaPagamento) {
         body: JSON.stringify({
             id_pessoa: idCliente,
             id_forma_pagamento: idFormaPagamento,
-            status_pagamento: true, // obrigatório
+            status_pagamento: statusPagamento, // agora permite false (pendente)
             itens
         })
     });
 
     if (!res.ok) throw new Error(await res.text());
 
+    const resJson = await res.json();
+
+    // Guardar resposta do servidor (útil para future updates/consulta)
+    try {
+        localStorage.setItem('ultimoPedidoRegistrado', JSON.stringify(resJson));
+    } catch (e) {
+        console.warn('Não foi possível salvar ultimoPedidoRegistrado:', e);
+    }
+
+    // Remover carrinho local
     localStorage.removeItem(PEDIDO_KEY);
-    return await res.json();
+
+    return resJson;
+}
+
+// helper: ler último pedido registrado (criado na tela /a-conta)
+// agora tolerante a vários formatos e garante retorno com pagamento.id_pagamento quando possível
+function getUltimoPedidoRegistrado() {
+    try {
+        const raw = localStorage.getItem('ultimoPedidoRegistrado');
+        if (!raw) return null;
+        const obj = JSON.parse(raw);
+
+        // Possíveis formatos: { pagamento: { id_pagamento: ... }, pedido: ..., itens: [...] }
+        if (obj && obj.pagamento && (obj.pagamento.id_pagamento || obj.pagamento.id_pagamento === 0)) {
+            return obj;
+        }
+
+        // Caso backend tenha retornado diretamente { pagamento: {...}, pedido: {...} } ou apenas { id_pagamento: ... }
+        if (obj && obj.id_pagamento) {
+            return { pagamento: { id_pagamento: obj.id_pagamento }, pedido: obj, itens: [] };
+        }
+
+        // Tentar varrer objetos aninhados para achar id_pagamento
+        if (obj && obj.pagamento && (obj.pagamento.id || obj.pagamento.id_pagamento)) {
+            return { pagamento: { id_pagamento: obj.pagamento.id_pagamento || obj.pagamento.id }, pedido: obj.pedido || {}, itens: obj.itens || [] };
+        }
+
+        return obj; // fallback
+    } catch (e) {
+        console.warn('Erro ao parse ultimoPedidoRegistrado', e);
+        return null;
+    }
+}
+
+// Nova versão de confirmarPagamento com tratamento detalhado de erros e logs
+async function confirmarPagamento(idPagamento) {
+    if (!idPagamento) throw new Error('idPagamento é necessário para confirmar pagamento.');
+
+    console.log('Chamando PATCH /pagamento/' + idPagamento + ' para setar status_pagamento = true');
+
+    let res;
+    try {
+        res = await fetch(`${API_URL}/pagamento/${idPagamento}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status_pagamento: true })
+        });
+    } catch (networkErr) {
+        console.error('Erro de rede ao confirmar pagamento:', networkErr);
+        throw new Error('Erro de rede ao confirmar pagamento. Verifique conexão com o servidor.');
+    }
+
+    // Log da resposta para depuração
+    console.log('Resposta PATCH status:', res.status, 'ok:', res.ok);
+
+    // Tentar extrair JSON com mensagem, se possível
+    let payload;
+    try {
+        payload = await res.json();
+    } catch (e) {
+        // Se não for JSON, tentar texto
+        try {
+            const txt = await res.text();
+            payload = { text: txt };
+        } catch (_) {
+            payload = null;
+        }
+    }
+
+    if (!res.ok) {
+        console.error('Erro do servidor ao confirmar pagamento:', payload);
+        const msg = (payload && (payload.error || payload.message || payload.text)) ? (payload.error || payload.message || payload.text) : `Status ${res.status}`;
+        throw new Error('Erro do servidor: ' + msg);
+    }
+
+    console.log('Pagamento confirmado:', payload);
+    return payload;
 }
 
 async function pagar(metodo, idCliente) {
@@ -92,6 +178,10 @@ async function pagar(metodo, idCliente) {
         window.location.href = "../a-login/login.html";
         return;
     }
+
+    // se houver pedido pendente criado pela conta, aprova esse pagamento em vez de criar novo
+    const ultimo = getUltimoPedidoRegistrado();
+    const idPagamentoExistente = ultimo?.pagamento?.id_pagamento || ultimo?.pagamento?.id;
 
     if (metodo === 'cartao') {
         const cpf = document.getElementById('input_cpf')?.value;
@@ -103,23 +193,39 @@ async function pagar(metodo, idCliente) {
         if (!validarCartao(numCartao)) { alert("Número de cartão inválido!"); return; }
 
         try {
-            await registrarPedido(idCliente, 1); // 1 = cartão
-            alert("Pagamento via cartão registrado com sucesso!");
+            if (idPagamentoExistente) {
+                await confirmarPagamento(idPagamentoExistente);
+                localStorage.removeItem('ultimoPedidoRegistrado');
+                localStorage.removeItem(PEDIDO_KEY);
+                alert("Pagamento confirmado (pedido pendente aprovado).");
+            } else {
+                await registrarPedido(idCliente, 1, true);
+                alert("Pagamento via cartão registrado com sucesso!");
+            }
             window.location.href = '../index.html';
         } catch (err) {
-            console.error(err);
-            alert("Erro ao registrar pagamento/cartão.");
+            console.error('Erro ao confirmar/registrar pagamento (cartão):', err);
+            alert('Erro ao confirmar/registrar pagamento: ' + (err.message || 'erro desconhecido'));
         }
 
     } else if (metodo === 'pix') {
         try {
-            await registrarPedido(idCliente, 2); // 2 = PIX
-            await navigator.clipboard.writeText(PIX_CODE);
-            alert("Código PIX copiado e pagamento registrado com sucesso!");
+            if (idPagamentoExistente) {
+                await confirmarPagamento(idPagamentoExistente);
+                // copiar PIX após confirmação
+                try { await navigator.clipboard.writeText(PIX_CODE); } catch(_) { /* ignore */ }
+                localStorage.removeItem('ultimoPedidoRegistrado');
+                localStorage.removeItem(PEDIDO_KEY);
+                alert("Código PIX copiado. Pagamento confirmado (pedido pendente aprovado).");
+            } else {
+                await registrarPedido(idCliente, 2, true);
+                try { await navigator.clipboard.writeText(PIX_CODE); } catch(_) { /* ignore */ }
+                alert("Código PIX copiado e pagamento registrado com sucesso!");
+            }
             window.location.href = '../index.html';
         } catch (err) {
-            console.error(err);
-            alert("Erro ao registrar pagamento PIX.");
+            console.error('Erro ao confirmar/registrar pagamento (PIX):', err);
+            alert('Erro ao confirmar/registrar pagamento PIX: ' + (err.message || 'erro desconhecido'));
         }
     } else {
         alert("Selecione um método de pagamento!");

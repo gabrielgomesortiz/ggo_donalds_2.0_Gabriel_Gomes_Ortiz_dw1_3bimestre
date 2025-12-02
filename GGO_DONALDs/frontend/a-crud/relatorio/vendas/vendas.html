@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório Produtos Mais Vendidos</title>
+    <link rel="stylesheet" href="../reset.css">
+    <link rel="stylesheet" href="relatorio.css">
+</head>
+<body>
+    <button id="btnVoltar" class="btn-voltar">Voltar</button>
+    
+    <div class="container">
+        <h1>Produtos Mais Vendidos do Mês</h1>
+
+        <div class="filtros">
+            <label for="mes">Selecione o Mês:</label>
+            <input type="month" id="mes">
+            <button id="btnFiltrar">Filtrar</button>
+            <button id="btnLimpar">Limpar</button>
+        </div>
+
+        <div id="resumoVendas">
+            <!-- Total geral será preenchido pelo JS -->
+        </div>
+
+        <table id="tabelaProdutos">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Produto</th>
+                    <th>Quantidade Vendida</th>
+                    <th>Valor Total (R$)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Linhas preenchidas pelo JS -->
+            </tbody>
+        </table>
+
+        <button class="btn-gerar-pdf" onclick="gerarPDF()">Gerar PDF</button>
+    </div>
+
+    <script src="relatorio_produtos.js"></script>
+</body>
+</html>
